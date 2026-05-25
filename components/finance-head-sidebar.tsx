@@ -14,7 +14,8 @@ import {
   Users,
   Receipt,
   PieChart,
-  Zap
+  Zap,
+  BookOpen
 } from "lucide-react"
 
 import {
@@ -32,7 +33,8 @@ import {
 } from "@/components/ui/sidebar"
 
 import Link from "next/link"
-import { usePathname } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
+import { authClient } from "@/lib/auth-client"
 
 const data = {
   navMain: [
@@ -46,6 +48,7 @@ const data = {
         { title: "Transactions", url: "/finance-head/revenue/transactions", icon: Banknote },
         { title: "Audit Log", url: "/finance-head/revenue/audit-log", icon: ShieldAlert },
         { title: "Reports", url: "/finance-head/revenue/reports", icon: PieChart },
+        { title: "General Ledger", url: "/finance-head/ledger", icon: BookOpen },
       ],
     },
     {
@@ -63,6 +66,12 @@ const data = {
 
 export function FinanceHeadSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const pathname = usePathname()
+  const router = useRouter()
+
+  async function handleSignOut() {
+    await authClient.signOut()
+    router.push("/login")
+  }
 
   return (
     <Sidebar {...props}>
@@ -105,7 +114,7 @@ export function FinanceHeadSidebar({ ...props }: React.ComponentProps<typeof Sid
           </SidebarMenuItem>
           <SidebarMenuItem>
             <SidebarMenuButton asChild>
-              <button onClick={() => alert("Sign out coming soon!")}>
+              <button onClick={handleSignOut} className="w-full">
                 <LogOut className="h-4 w-4" />
                 <span>Sign out</span>
               </button>
