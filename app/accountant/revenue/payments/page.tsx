@@ -8,7 +8,8 @@ import { and, eq } from "drizzle-orm";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
-import { DEFAULT_FEES } from "@/lib/constants";
+import { DEFAULT_FEES, getLibraryFeeByGrade } from "@/lib/constants";
+import { getGradeFromPaymentCode } from "@/lib/utils";
 
 export default async function PaymentsPage(props: {
   searchParams: Promise<{ month?: string; year?: string }>;
@@ -41,19 +42,22 @@ export default async function PaymentsPage(props: {
     if (students.length > 0) {
       const crypto = require("crypto");
       const newPayments = students.map((student) => {
-        const registrationFee = month === 1 ? DEFAULT_FEES.registration : 0;
+        const registrationFee = month === 1 && !student.isRegistrationPaid ? DEFAULT_FEES.registration : 0;
         const tuitionFee = DEFAULT_FEES.tuition;
         const usesTransport = parseInt(student.paymentCode.replace(/\D/g, "") || "1", 10) % 3 !== 0;
         const transportFee = usesTransport ? DEFAULT_FEES.transport : 0;
+        const grade = getGradeFromPaymentCode(student.paymentCode);
+        const libraryFee = student.isLibraryFeePaid ? 0 : getLibraryFeeByGrade(grade);
         return {
           id: crypto.randomUUID(),
           studentId: student.id,
           month: month,
           year: year,
           registrationFee,
+          libraryFee,
           tuitionFee,
           transportFee,
-          totalMonthlyFee: registrationFee + tuitionFee + transportFee,
+          totalMonthlyFee: registrationFee + libraryFee + tuitionFee + transportFee,
           totalPayment: 0,
           penaltyFee: 0,
         };

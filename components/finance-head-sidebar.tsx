@@ -13,7 +13,8 @@ import {
   LogOut,
   Users,
   Receipt,
-  PieChart
+  PieChart,
+  Zap
 } from "lucide-react"
 
 import {
@@ -54,6 +55,7 @@ const data = {
         { title: "Dashboard", url: "/finance-head/expenses/dashboard", icon: LayoutDashboard },
         { title: "Purchase Orders", url: "/finance-head/expenses/orders", icon: FileText },
         { title: "Payroll", url: "/finance-head/expenses/payroll", icon: Users },
+        { title: "Pay Salaries", url: "/finance-head/payroll", icon: Zap },
       ],
     },
   ],

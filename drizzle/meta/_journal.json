@@ -8,6 +8,13 @@
       "when": 1777660179760,
       "tag": "0000_lazy_eternals",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1779692918490,
+      "tag": "0001_tiresome_stingray",
+      "breakpoints": true
     }
   ]
 }

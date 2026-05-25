@@ -4,6 +4,24 @@ export const DEFAULT_FEES = {
   transport: 800,
 };
 
+// Library/book rental fee — charged once per student, varies by grade group.
+// Update these values when the responsible person provides the real amounts.
+export const LIBRARY_FEES: Record<string, number> = {
+  KG: 150,
+  Elementary: 200,  // Grade 1–4
+  Middle: 250,      // Grade 5–8
+  High: 300,        // Grade 9–12
+};
+
+export function getLibraryFeeByGrade(grade: string): number {
+  if (grade.startsWith("KG")) return LIBRARY_FEES.KG;
+  const num = parseInt(grade.replace(/\D/g, ""), 10);
+  if (num >= 1 && num <= 4) return LIBRARY_FEES.Elementary;
+  if (num >= 5 && num <= 8) return LIBRARY_FEES.Middle;
+  if (num >= 9 && num <= 12) return LIBRARY_FEES.High;
+  return 0;
+}
+
 export const INITIAL_PAYROLL_DATA = [
   { no: 1, name: "Bihonegn Abinet", position: "Seralyway", section: "Elementary", basicSalary: 33000.00, forPensionContributionDeductionPurpose: 33000.00, accWorkingDate: 30, allowanceForServiceAssistance: 3630.00, allowanceForOvertime: 0.00, taxableIncome: 33000.00, grossSalary: 36630.00, receivable: 0.00 },
   { no: 2, name: "Wasshun Berhanu", position: "Head", section: "High School", basicSalary: 35000.00, forPensionContributionDeductionPurpose: 35000.00, accWorkingDate: 30, allowanceForServiceAssistance: 3850.00, allowanceForOvertime: 0.00, taxableIncome: 35000.00, grossSalary: 38850.00, receivable: 0.00 },

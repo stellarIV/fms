@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { updatePayment, updatePaymentsBatch, updateMonthlyPaymentStatus } from "@/app/actions/payments";
 import { saveDailyReport } from "@/app/actions/reports";
 import { updateStudentNameAction } from "@/app/actions/students";
-import { CheckCircle2, Save, Loader2, Search, Lock, XCircle, CheckCircle, AlertCircle } from "lucide-react";
+import { CheckCircle2, Save, Loader2, Search, Lock, XCircle, CheckCircle, AlertCircle, Zap } from "lucide-react";
 import { toast } from "sonner";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogTrigger } from "@/components/ui/dialog";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
@@ -607,23 +607,38 @@ export function PaymentsClient({
                       </TableCell>
                       {/* Receipt Number */}
                       <TableCell className="py-1 relative">
-                        {(principalMode || effectiveReadOnly) ? (
-                          <span className="text-muted-foreground flex items-center gap-1">
-                            <Lock className="h-3 w-3 shrink-0" />
-                            {payment.receiptNumber || "—"}
-                          </span>
-                        ) : (
-                          <div className="flex items-center gap-1.5">
-                            <Input 
-                              type="text" 
-                              value={payment.receiptNumber || ""} 
-                              onChange={(e) => handleChange(payment.id, "receiptNumber", e.target.value)}
-                              className={`h-7 w-24 bg-background text-xs px-2 ${isMissingReceipt ? "border-yellow-600 ring-1 ring-yellow-600" : ""}`}
-                              placeholder="Receipt #"
-                            />
-                            {savedId === "all" && <CheckCircle2 className="h-3 w-3 text-green-500" />}
-                          </div>
-                        )}
+                        {(() => {
+                          const isPaidViaChapa = payment.receiptNumber?.startsWith("FMS") && !payment.receiptNumber?.startsWith("PENDING:");
+                          if (isPaidViaChapa) {
+                            return (
+                              <span className="flex items-center gap-1 text-green-600 font-medium text-[10px]">
+                                <Zap className="h-3 w-3 shrink-0" />
+                                Chapa
+                                <span className="text-muted-foreground font-normal">{payment.receiptNumber?.slice(0, 12)}…</span>
+                              </span>
+                            );
+                          }
+                          if (principalMode || effectiveReadOnly) {
+                            return (
+                              <span className="text-muted-foreground flex items-center gap-1">
+                                <Lock className="h-3 w-3 shrink-0" />
+                                {payment.receiptNumber || "—"}
+                              </span>
+                            );
+                          }
+                          return (
+                            <div className="flex items-center gap-1.5">
+                              <Input
+                                type="text"
+                                value={payment.receiptNumber || ""}
+                                onChange={(e) => handleChange(payment.id, "receiptNumber", e.target.value)}
+                                className={`h-7 w-24 bg-background text-xs px-2 ${isMissingReceipt ? "border-yellow-600 ring-1 ring-yellow-600" : ""}`}
+                                placeholder="Receipt #"
+                              />
+                              {savedId === "all" && <CheckCircle2 className="h-3 w-3 text-green-500" />}
+                            </div>
+                          );
+                        })()}
                       </TableCell>
                     </TableRow>
                     );

@@ -13,7 +13,8 @@ import {
   LogOut,
   Users,
   Receipt,
-  PieChart
+  PieChart,
+  Zap
 } from "lucide-react"
 
 import {

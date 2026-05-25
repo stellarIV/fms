@@ -55,6 +55,8 @@ export const student = pgTable("student", {
 	name: text("name").notNull(),
 	paymentCode: text("paymentCode").notNull().unique(),
 	isRegistrationPaid: boolean("isRegistrationPaid").notNull().default(false),
+	isLibraryFeePaid: boolean("isLibraryFeePaid").notNull().default(false),
+	userId: text("userId").references(() => user.id),
 	createdAt: timestamp("createdAt").notNull().defaultNow(),
 	updatedAt: timestamp("updatedAt").notNull().defaultNow()
 });
@@ -66,6 +68,7 @@ export const monthlyPayment = pgTable("monthly_payment", {
 	year: integer("year").notNull(), // Ethiopian Year
 	prevPending: integer("prevPending").notNull().default(0),
 	registrationFee: integer("registrationFee").notNull().default(0),
+	libraryFee: integer("libraryFee").notNull().default(0),
 	tuitionFee: integer("tuitionFee").notNull().default(1500),
 	transportFee: integer("transportFee").notNull().default(800),
 	penaltyFee: integer("penaltyFee").notNull().default(0),
@@ -113,6 +116,8 @@ export const payroll = pgTable("payroll", {
 	taxableIncome: doublePrecision("taxableIncome").notNull().default(0),
 	grossSalary: doublePrecision("grossSalary").notNull().default(0),
 	receivable: doublePrecision("receivable").notNull().default(0),
+	email: text("email"),
+	bankAccount: text("bankAccount"),
 	createdAt: timestamp("createdAt").notNull().defaultNow(),
 	updatedAt: timestamp("updatedAt").notNull().defaultNow()
 });

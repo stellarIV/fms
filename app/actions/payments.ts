@@ -4,6 +4,8 @@ import { db } from "@/db";
 import { monthlyPayment, student, monthlyPaymentStatus } from "@/db/schema";
 import { eq, and } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
+import { getLibraryFeeByGrade } from "@/lib/constants";
+import { getGradeFromPaymentCode } from "@/lib/utils";
 
 export async function updatePayment(id: string, updates: Partial<typeof monthlyPayment.$inferInsert>) {
   return updatePaymentsBatch([{ id, data: updates }]);
@@ -49,12 +51,26 @@ export async function updatePaymentsBatch(batch: { id: string, data: any }[]) {
       if (!currentPayment) return;
 
       let remainingPayment = updates.totalPayment ?? currentPayment.totalPayment;
+
+      // Registration fee — once per student (month 1 only)
       let registrationFee = currentPayment.registrationFee;
       if (currentPayment.month === 1 && !currentPayment.student.isRegistrationPaid) {
         registrationFee = 375;
       }
 
-      const totalMonthlyFee = (currentPayment.tuitionFee || 0) + (currentPayment.transportFee || 0) + registrationFee;
+      // Library fee — once per student ever (any month)
+      let libraryFee = currentPayment.libraryFee ?? 0;
+      if (!currentPayment.student.isLibraryFeePaid && libraryFee === 0) {
+        const grade = getGradeFromPaymentCode(currentPayment.student.paymentCode);
+        libraryFee = getLibraryFeeByGrade(grade);
+      }
+
+      const totalMonthlyFee =
+        (currentPayment.tuitionFee || 0) +
+        (currentPayment.transportFee || 0) +
+        registrationFee +
+        libraryFee;
+
       let penaltyFee = updates.penaltyFee ?? Math.max(0, totalMonthlyFee - remainingPayment);
 
       await db.update(monthlyPayment).set({
@@ -62,13 +78,24 @@ export async function updatePaymentsBatch(batch: { id: string, data: any }[]) {
         penaltyFee,
         totalMonthlyFee,
         registrationFee,
+        libraryFee,
         updatedAt: new Date(),
       }).where(eq(monthlyPayment.id, id));
 
-      if (registrationFee > 0 && remainingPayment > 0) {
-        await db.update(student)
-          .set({ isRegistrationPaid: true })
-          .where(eq(student.id, currentPayment.studentId));
+      // Flip one-time fee flags when payment is received
+      if (remainingPayment > 0) {
+        const flagUpdates: Record<string, boolean> = {};
+        if (registrationFee > 0 && !currentPayment.student.isRegistrationPaid) {
+          flagUpdates.isRegistrationPaid = true;
+        }
+        if (libraryFee > 0 && !currentPayment.student.isLibraryFeePaid) {
+          flagUpdates.isLibraryFeePaid = true;
+        }
+        if (Object.keys(flagUpdates).length > 0) {
+          await db.update(student)
+            .set(flagUpdates)
+            .where(eq(student.id, currentPayment.studentId));
+        }
       }
     });
 

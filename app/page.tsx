@@ -22,6 +22,7 @@ export default async function RootPage() {
   if (role === "school_manager" || role === "school manager") redirect("/school-manager");
   if (role.startsWith("principal")) redirect("/principal");
   if (role === "finance head" || role === "finance_head") redirect("/finance-head/dashboard");
+  if (role === "student") redirect("/student/dashboard");
 
   redirect("/pending-approval");
 }
