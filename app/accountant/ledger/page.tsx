@@ -4,9 +4,9 @@ import { redirect } from "next/navigation";
 import { getFinancialStatementsAction, getGeneralLedgerAction } from "@/app/actions/financials";
 import { FinancialLedgerDashboard } from "@/components/financial-ledger-dashboard";
 
-export default async function SchoolManagerBudgetPage() {
+export default async function AccountantLedgerPage() {
   const session = await auth.api.getSession({ headers: await headers() });
-  if (!session || session.user.role !== "school_manager") {
+  if (!session || session.user.role !== "accountant") {
     redirect("/login");
   }
 
@@ -18,9 +18,9 @@ export default async function SchoolManagerBudgetPage() {
   if (!statementsResult.success || !statementsResult.data || !ledgerResult.success || !ledgerResult.data) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[400px] text-center p-6 bg-card border rounded-lg max-w-md mx-auto mt-12 shadow-sm">
-        <h2 className="text-lg font-bold text-red-500">Financial Data Unavailable</h2>
+        <h2 className="text-lg font-bold text-red-500">Financial Ledger Unavailable</h2>
         <p className="text-sm text-muted-foreground mt-2 leading-relaxed">
-          The General Ledger aggregated tables or budgets could not be compiled at this time. Please contact school administration.
+          The school's dynamic general ledger, trial balance, and operating statement could not be loaded.
         </p>
       </div>
     );

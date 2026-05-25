@@ -10,7 +10,8 @@ import {
   SidebarMenuItem, SidebarRail, SidebarFooter,
 } from "@/components/ui/sidebar"
 import Link from "next/link"
-import { usePathname } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
+import { authClient } from "@/lib/auth-client"
 
 const navItems = [
   { title: "Purchase Orders", url: "/school-manager/purchase-orders", icon: ClipboardList },
@@ -23,6 +24,12 @@ const navItems = [
 
 export function SchoolManagerSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const pathname = usePathname()
+  const router = useRouter()
+
+  async function handleSignOut() {
+    await authClient.signOut()
+    router.push("/login")
+  }
 
   return (
     <Sidebar {...props}>
@@ -66,7 +73,7 @@ export function SchoolManagerSidebar({ ...props }: React.ComponentProps<typeof S
           </SidebarMenuItem>
           <SidebarMenuItem>
             <SidebarMenuButton asChild>
-              <button onClick={() => alert("Sign out coming soon!")}>
+              <button onClick={handleSignOut} className="w-full">
                 <LogOut className="h-4 w-4" />
                 <span>Sign out</span>
               </button>

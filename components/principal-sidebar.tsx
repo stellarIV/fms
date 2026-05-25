@@ -27,7 +27,8 @@ import {
 } from "@/components/ui/sidebar"
 
 import Link from "next/link"
-import { usePathname } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
+import { authClient } from "@/lib/auth-client"
 
 const data = {
   navMain: [
@@ -46,6 +47,12 @@ const data = {
 
 export function PrincipalSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const pathname = usePathname()
+  const router = useRouter()
+
+  async function handleSignOut() {
+    await authClient.signOut()
+    router.push("/login")
+  }
 
   return (
     <Sidebar {...props}>
@@ -88,7 +95,7 @@ export function PrincipalSidebar({ ...props }: React.ComponentProps<typeof Sideb
           </SidebarMenuItem>
           <SidebarMenuItem>
             <SidebarMenuButton asChild>
-              <button onClick={() => alert("Sign out coming soon!")}>
+              <button onClick={handleSignOut} className="w-full">
                 <LogOut className="h-4 w-4" />
                 <span>Sign out</span>
               </button>
