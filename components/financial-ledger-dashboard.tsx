@@ -35,7 +35,6 @@ type FinancialDashboardProps = {
 export function FinancialLedgerDashboard({ statements, ledger, initialYear, userRole }: FinancialDashboardProps) {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState("budget");
-  const [selectedYear, setSelectedYear] = useState(initialYear);
   const [isPending, startTransition] = useTransition();
 
   // Local state for editing budgets
@@ -100,7 +99,7 @@ export function FinancialLedgerDashboard({ statements, ledger, initialYear, user
     }));
 
     startTransition(async () => {
-      const res = await saveBudgetsAction(selectedYear, allocations);
+      const res = await saveBudgetsAction(initialYear, allocations);
       if (res.success) {
         toast.success("Annual budget ceiling allocations saved successfully.");
         router.refresh();
@@ -167,14 +166,19 @@ export function FinancialLedgerDashboard({ statements, ledger, initialYear, user
             Financial Ledger & Budget Planning
           </h1>
           <p className="text-sm text-muted-foreground mt-1.5">
-            Double-entry ledger accounting, trial balances, and category-level budget ceilings for Ethiopian Calendar Year {selectedYear}.
+            Double-entry ledger accounting, trial balances, and category-level budget ceilings for Ethiopian Calendar Year {initialYear}.
           </p>
         </div>
         <div className="flex items-center gap-2">
           <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Financial Year:</label>
           <select 
-            value={selectedYear} 
-            onChange={(e) => setSelectedYear(parseInt(e.target.value))}
+            value={initialYear} 
+            onChange={(e) => {
+              const newYear = e.target.value;
+              const params = new URLSearchParams(window.location.search);
+              params.set("year", newYear);
+              router.push(`${window.location.pathname}?${params.toString()}`);
+            }}
             className="h-9 rounded-md border border-input bg-card px-3 py-1 text-sm shadow-sm focus:outline-none focus:ring-1 focus:ring-primary font-medium"
           >
             <option value={2018}>2018 E.C. (2025/2026 G.C.)</option>

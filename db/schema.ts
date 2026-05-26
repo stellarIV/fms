@@ -224,3 +224,25 @@ export const purchaseOrderRelations = relations(purchaseOrder, ({ one }) => ({
 		references: [expenseRequest.id],
 	}),
 }));
+
+// School Budgeting & General Ledger System Tables
+export const budget = pgTable("budget", {
+	id: text("id").primaryKey(),
+	category: text("category").notNull(), // "payroll", "stationery", "maintenance", "utility", "transport", "assets", "other"
+	allocated: doublePrecision("allocated").notNull().default(0),
+	year: integer("year").notNull().default(2026),
+	createdAt: timestamp("createdAt").notNull().defaultNow(),
+	updatedAt: timestamp("updatedAt").notNull().defaultNow()
+});
+
+export const manualJournalEntry = pgTable("manual_journal_entry", {
+	id: text("id").primaryKey(),
+	date: timestamp("date").notNull().defaultNow(),
+	description: text("description").notNull(),
+	accountCode: text("accountCode").notNull(), // e.g. "1000" (Cash), "1100" (A/R), "1500" (Fixed Assets), "4000" (Revenue), etc.
+	debit: doublePrecision("debit").notNull().default(0),
+	credit: doublePrecision("credit").notNull().default(0),
+	reference: text("reference"), // e.g. "JV-2026-001"
+	createdAt: timestamp("createdAt").notNull().defaultNow()
+});
+

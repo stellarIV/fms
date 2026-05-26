@@ -79,7 +79,7 @@ export default function AuditLogPage() {
   const [fieldFilter, setFieldFilter] = useState<string>("all")
 
   const userSection = useMemo(() => {
-    const role = session?.user?.role as string
+    const role = (session?.user as any)?.role as string
     if (!role) return null
     if (role === "principal_kg") return "KG"
     if (role === "principal_elementary") return "Elementary"

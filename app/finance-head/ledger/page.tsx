@@ -4,13 +4,18 @@ import { redirect } from "next/navigation";
 import { getFinancialStatementsAction, getGeneralLedgerAction } from "@/app/actions/financials";
 import { FinancialLedgerDashboard } from "@/components/financial-ledger-dashboard";
 
-export default async function FinanceHeadLedgerPage() {
+interface PageProps {
+  searchParams: Promise<{ year?: string }>;
+}
+
+export default async function FinanceHeadLedgerPage(props: PageProps) {
   const session = await auth.api.getSession({ headers: await headers() });
   if (!session || session.user.role !== "finance_head") {
     redirect("/login");
   }
 
-  const year = 2018; // Default Ethiopian Calendar Year Meskerem 2018 E.C.
+  const searchParams = await props.searchParams;
+  const year = parseInt(searchParams.year || "2018");
   
   const statementsResult = await getFinancialStatementsAction(year);
   const ledgerResult = await getGeneralLedgerAction(year);
