@@ -44,7 +44,7 @@ export default function PrincipalPayrollPage() {
   
   // Determine section based on role
   const userSection = useMemo(() => {
-    const role = session?.user?.role as string
+    const role = (session?.user as any)?.role as string
     if (!role) return null
     if (role === "principal_kg") return "KG"
     if (role === "principal_elementary") return "Elementary"
@@ -90,7 +90,7 @@ export default function PrincipalPayrollPage() {
 
     // --- Diff changes against original snapshot ---
     const principalName = session?.user?.name || "Unknown Principal"
-    const principalRole = (session?.user?.role as string) || "principal"
+    const principalRole = ((session?.user as any)?.role as string) || "principal"
     const auditEntries: AuditLogEntry[] = []
 
     const FIELD_LABELS: Record<string, string> = {

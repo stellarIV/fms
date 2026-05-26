@@ -86,6 +86,8 @@ export async function saveBudgetsAction(year: number, allocations: Array<{ categ
     }
 
     revalidatePath("/school-manager/budget-plan");
+    revalidatePath("/accountant/ledger");
+    revalidatePath("/finance-head/ledger");
     return { success: true };
   } catch (error) {
     console.error("saveBudgetsAction error:", error);
@@ -125,6 +127,9 @@ export async function addManualJournalEntryAction(data: {
     });
 
     revalidatePath("/school-manager/budget-plan");
+    revalidatePath("/accountant/ledger");
+    revalidatePath("/accountant/revenue/dashboard");
+    revalidatePath("/principal/dashboard");
     return { success: true };
   } catch (error) {
     console.error("addManualJournalEntryAction error:", error);
