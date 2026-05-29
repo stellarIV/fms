@@ -26,6 +26,7 @@ import { toast } from "sonner"
 
 const AVAILABLE_ROLES = [
   { value: "guest", label: "Guest" },
+  { value: "student", label: "Student" },
   { value: "accountant", label: "Accountant" },
   { value: "finance_head", label: "Finance Head" },
   { value: "school_manager", label: "School Manager" },
